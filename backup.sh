@@ -13,18 +13,18 @@ done
 ################################################################################
 
 # Variable to configure
-USER="aadlani"
-EMAIL="anouar@adlani.com"
-BACKUP_HOME="/Users/$USER/backups"
-BACKUP_SOURCE_DIR="/Users/$USER/Documents"
+USER="mathomp4"
+EMAIL="matthew.thompson@nasa.gov"
+BACKUP_HOME="/home/$USER/DreamhostBackups"
+BACKUP_SOURCE="geos@niners.dreamhost.com:"
 
 # Dates
-NOW=$(date +%Y%m%d%H%M)               #YYYYMMDDHHMM
-YESTERDAY=$(date -v -1d +%Y%m%d)      #YYYYMMDD
-PREVIOUSMONTH=$(date -v -1m +%Y%m)    #YYYYMM
-TODAY=${NOW:0:8}                      #YYYYMMDD
-THISMONTH=${TODAY:0:6}                #YYYYMM
-THISYEAR=${TODAY:0:4}                 #YYYY
+NOW=$(date +%Y%m%d%H%M)                                              #YYYYMMDDHHMM
+YESTERDAY=$(date -d yesterday +%Y%m%d)                               #YYYYMMDD
+PREVIOUSMONTH=$(date -d"$(date +%Y-%m-15 -d 'last month')" +%Y%m)    #YYYYMM
+TODAY=${NOW:0:8}                                                     #YYYYMMDD
+THISMONTH=${TODAY:0:6}                                               #YYYYMM
+THISYEAR=${TODAY:0:4}                                                #YYYY
 
 # Backup Configuration
 LOGFILE="$BACKUP_HOME/backups.log"
@@ -38,7 +38,7 @@ MONTHLY_ARCHIVES_DIR="$ARCHIVES_DIR/monthly"
 start_time=`date +%s`
 
 # Init the folder structure
-mkdir -p $SNAPSHOT_DIR  $DAILY_ARCHIVES_DIR $WEEKLY_ARCHIVES_DIR $MONTHLY_ARCHIVES_DIR &> /dev/null
+mkdir -p $SNAPSHOT_DIR $DAILY_ARCHIVES_DIR $WEEKLY_ARCHIVES_DIR $MONTHLY_ARCHIVES_DIR &> /dev/null
 touch $LOGFILE
 printf "[%12d] Backup started\n" $NOW >> $LOGFILE
 
@@ -46,9 +46,9 @@ printf "[%12d] Backup started\n" $NOW >> $LOGFILE
 # Step #1: Retreive files to create snapshots with RSYNC.
 ################################################################################
 
-rsync -azH --link-dest=$CURRENT_LINK  $BACKUP_SOURCE_DIR $SNAPSHOT_DIR/$NOW \
+rsync -e "/usr/bin/ssh" --bwlimit=2000 --delete -azH --link-dest=$CURRENT_LINK  $BACKUP_SOURCE $SNAPSHOT_DIR/$NOW \
   && ln -snf $(ls -1d $SNAPSHOT_DIR/* | tail -n1) $CURRENT_LINK \
-  && printf "\t- Copy from %s to %s successfull \n" $BACKUP_SOURCE_DIR $SNAPSHOT_DIR/$NOW >> $LOGFILE
+  && printf "\t- Copy from %s to %s successfull \n" $BACKUP_SOURCE $SNAPSHOT_DIR/$NOW >> $LOGFILE
 
 ################################################################################
 # Step #2: Group and Compress the previous snaphots per days
