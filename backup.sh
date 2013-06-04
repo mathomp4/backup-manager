@@ -15,7 +15,7 @@ done
 # Variable to configure
 USER="mathomp4"
 EMAIL="matthew.thompson@nasa.gov"
-BACKUP_HOME="/home/$USER/DreamhostBackups"
+BACKUP_HOME="/cuda/$USER/DreamhostBackups"
 BACKUP_SOURCE="geos@niners.dreamhost.com:"
 
 # Dates
@@ -84,7 +84,7 @@ fi
 # Step #4: rotate the backups 
 ################################################################################
 
-find -E $DAILY_ARCHIVES_DIR -type f -mindepth 1 -maxdepth 1 -regex '.*/[0-9]{8}\.tar\.gz\.gpg$' -exec basename {} \; | \
+find -regextype posix-extended $DAILY_ARCHIVES_DIR -type f -mindepth 1 -maxdepth 1 -regex '.*/[0-9]{8}\.tar\.gz\.gpg$' -exec basename {} \; | \
 while read encryptedArchive
 do
   archiveMonth=${encryptedArchive:0:6}
