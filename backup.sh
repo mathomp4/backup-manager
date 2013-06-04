@@ -105,7 +105,7 @@ do
 done 
 
 # Step #4.3: Keep monthly backups for older backups
-find -E $WEEKLY_ARCHIVES_DIR -mindepth 1 -maxdepth 1 -type f -regex '.*/[0-9]{6}\.WK_[1-4]\.tar\.gz\.gpg$' -exec basename {} \; | \
+find -regextype posix-extended $WEEKLY_ARCHIVES_DIR -mindepth 1 -maxdepth 1 -type f -regex '.*/[0-9]{6}\.WK_[1-4]\.tar\.gz\.gpg$' -exec basename {} \; | \
 while read encryptedArchive
 do
   archiveMonth=${encryptedArchive:0:6}
