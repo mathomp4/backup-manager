@@ -46,7 +46,7 @@ printf "[%12d] Backup started\n" $NOW >> $LOGFILE
 # Step #1: Retreive files to create snapshots with RSYNC.
 ################################################################################
 
-rsync -e "/usr/bin/ssh" --bwlimit=2000 --delete -azH --link-dest=$CURRENT_LINK  $BACKUP_SOURCE $SNAPSHOT_DIR/$NOW \
+rsync -e "/usr/bin/ssh" --bwlimit=2000 --delete --exclude 'logs/' -azH --link-dest=$CURRENT_LINK  $BACKUP_SOURCE $SNAPSHOT_DIR/$NOW \
   && ln -snf $(ls -1d $SNAPSHOT_DIR/* | tail -n1) $CURRENT_LINK \
   && printf "\t- Copy from %s to %s successfull \n" $BACKUP_SOURCE $SNAPSHOT_DIR/$NOW >> $LOGFILE
 
@@ -84,7 +84,7 @@ fi
 # Step #4: rotate the backups 
 ################################################################################
 
-find -regextype posix-extended $DAILY_ARCHIVES_DIR -type f -mindepth 1 -maxdepth 1 -regex '.*/[0-9]{8}\.tar\.gz\.gpg$' -exec basename {} \; | \
+find $DAILY_ARCHIVES_DIR -mindepth 1 -maxdepth 1 -type f -regextype posix-extended -regex '.*/[0-9]{8}\.tar\.gz\.gpg$' -exec basename {} \; | \
 while read encryptedArchive
 do
   archiveMonth=${encryptedArchive:0:6}
@@ -105,7 +105,7 @@ do
 done 
 
 # Step #4.3: Keep monthly backups for older backups
-find -regextype posix-extended $WEEKLY_ARCHIVES_DIR -mindepth 1 -maxdepth 1 -type f -regex '.*/[0-9]{6}\.WK_[1-4]\.tar\.gz\.gpg$' -exec basename {} \; | \
+find $WEEKLY_ARCHIVES_DIR -mindepth 1 -maxdepth 1 -type f -regextype posix-extended -regex '.*/[0-9]{6}\.WK_[1-4]\.tar\.gz\.gpg$' -exec basename {} \; | \
 while read encryptedArchive
 do
   archiveMonth=${encryptedArchive:0:6}
